@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-
-import pprint
+import os
+import git
+import tempfile
 import time
 
 class Submission:
@@ -62,20 +63,32 @@ class AtcoderUserData:
   def get_submissions(self):
     return self.__submissions
 
+class AtcoderRepo:
+  def __init__(self, clone_url):
+    self.__clone_url = clone_url
+    self.__path = tempfile.mkdtemp()
+    self.__repo = self.__clone()
+    self.__setup()
+
+  def __del__(self):
+    os.removedirs(self.__path)
+
+  def get_path(self):
+    return self.__path
+
+  def __clone(self):
+    git.Repo.clone_from(self.__clone_url, self.__path)
+    return git.Repo()
+  
+  def __setup(self):
+    if not any(branch.name == 'main' for branch in self.__repo.branches):
+      self.__repo.git.add(self.__path)
+      self.__repo.git.commit('-m', 'Initial commit')
+
 class Main:
   def __init__(self):
-    h = AtcoderUserData('tawainfer')
-    s = h.get_submissions()
-    print(f'{len(s)}件の提出履歴')
-    
-    for i in range(2):
-      for j in range(3):
-        st = time.time()
-        str = s[-(j + 1)].get_code()
-        et = time.time()
-        print(f'提出#{s[-(j + 1)].get_id()}のソースコードを取得 {len(str)}byte {et - st:.2f}s')
-        print(s[-(j + 1)].get_url())
-        print()
+    ar = AtcoderRepo()
+    print(ar.get_path())
 
 if __name__ == '__main__':
   Main()
