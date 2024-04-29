@@ -37,13 +37,13 @@ class AtcoderUserData:
       self.__submissions.append(Submission(**d))
     self.__fetch_submissions(data[-1]['epoch_second'] + 1)
 
-  def get(self):
+  def get_submissions(self):
     return self.__submissions
 
 class Main:
   def __init__(self):
     h = AtcoderUserData('tawainfer')
-    print(len(h.get()))
+    print(len(h.get_submissions()))
 
 if __name__ == '__main__':
   Main()
