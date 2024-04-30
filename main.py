@@ -79,7 +79,7 @@ class AtcoderRepo:
 
   def __clone(self):
     git.Repo.clone_from(self.__clone_url, self.__path)
-    return git.Repo()
+    return git.Repo(self.__path)
   
   def __setup(self):
     if not any(branch.name == 'main' for branch in self.__repo.branches):
