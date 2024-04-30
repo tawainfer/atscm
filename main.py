@@ -82,9 +82,9 @@ class AtcoderRepo:
     return git.Repo(self.__path)
   
   def __setup(self):
-    if not any(branch.name == 'main' for branch in self.__repo.branches):
-      self.__repo.git.add(self.__path)
-      self.__repo.git.commit('-m', 'Initial commit')
+    if 'main' not in self.__repo.branches:
+      raise Exception("mainブランチをリモートリポジトリに作成してください。")
+    self.__repo.git.checkout('main')
 
 class Main:
   def __init__(self):
