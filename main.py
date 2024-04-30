@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import git
+import shutil
 import tempfile
 import time
 
@@ -71,7 +72,7 @@ class AtcoderRepo:
     self.__setup()
 
   def __del__(self):
-    os.removedirs(self.__path)
+    shutil.rmtree(self.__path)
 
   def get_path(self):
     return self.__path
@@ -87,7 +88,7 @@ class AtcoderRepo:
 
 class Main:
   def __init__(self):
-    ar = AtcoderRepo()
+    ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
     print(ar.get_path())
 
 if __name__ == '__main__':
