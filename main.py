@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-import os
+from pathlib import Path
+import re
 import git
+import yaml
 import shutil
 import tempfile
 import time
@@ -12,18 +14,35 @@ class Submission:
     self.__epoch_second = epoch_second
     self.__execution_time = execution_time
     self.__id = id
-    self.__language = language
+    self.__language = re.sub(r'\([^()]*\)', '', language).strip()
     self.__length = length
     self.__point = point
     self.__problem_id = problem_id
     self.__result = result
     self.__user_id = user_id
 
+    self.__extension = 'cpp'
+    self.__category_id = 'other'
     self.__url = f'https://atcoder.jp/contests/{self.__contest_id}/submissions/{self.__id}'
     self.__code = None
 
   def get_id(self):
     return self.__id
+
+  def get_language(self):
+    return self.__language
+
+  def get_category_id(self):
+    return self.__category_id
+
+  def get_contest_id(self):
+    return self.__contest_id
+
+  def get_problem_id(self):
+    return self.__problem_id
+  
+  def get_extension(self):
+    return self.__extension
 
   def get_url(self):
     return self.__url
@@ -67,15 +86,37 @@ class AtcoderUserData:
 class AtcoderRepo:
   def __init__(self, clone_url):
     self.__clone_url = clone_url
-    self.__path = tempfile.mkdtemp()
+    self.__path = Path(tempfile.mkdtemp())
     self.__repo = self.__clone()
     self.__setup()
 
-  def __del__(self):
-    shutil.rmtree(self.__path)
+  # def __del__(self):
+  #   shutil.rmtree(self.__path)
 
   def get_path(self):
     return self.__path
+
+  def add(self, submissions):
+    for s in submissions:
+      problem_path = self.__path / Path(s.get_category_id()) \
+        / Path(s.get_contest_id()) / Path(s.get_problem_id())
+      if not problem_path.is_dir():
+        problem_path.mkdir(parents = True)
+
+      index_path = problem_path / 'index.yaml'
+      index = dict()
+      if index_path.is_file():
+        with open(index_path, 'r') as f:
+          index = yaml.safe_load(f)
+
+      if s.get_extension() not in index or s.get_id() > index[s.get_extension()]:
+        index[s.get_extension()] = s.get_id()
+        source_path = problem_path / f'main.{s.get_extension()}'
+        with open(source_path, 'w') as f:
+          f.write(s.get_code())
+
+        with open(index_path, 'w') as f:
+          yaml.dump(index, f)
 
   def __clone(self):
     git.Repo.clone_from(self.__clone_url, self.__path)
@@ -88,8 +129,13 @@ class AtcoderRepo:
 
 class Main:
   def __init__(self):
+    aud = AtcoderUserData('tawainfer')
+    submissions = aud.get_submissions()
+
     ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
-    print(ar.get_path())
+    ar.add([submissions[0]])
+    ar.add([submissions[0]])
+    # ar.add(submissions)
 
 if __name__ == '__main__':
   Main()
