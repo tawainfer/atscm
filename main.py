@@ -8,15 +8,32 @@ import yaml
 import shutil
 import tempfile
 import time
+import pprint
 
 class LanguageUsedInAtcoder:
   language_list = None
+  extension_list = None
 
   def __init__(self, language):
     self.__full_name = language
     self.__display_name = re.sub(r'\([^()]*\)', '', self.__full_name).strip()
     self.__version = re.findall(r'\([^()]*\)', self.__full_name)[0].strip('(').strip(')')
     self.__base_name = self.__identify_base_name()
+    self.__extension = self.__identify_extension()
+
+  def __identify_extension(self):
+    if LanguageUsedInAtcoder.extension_list is None:
+      self.__load_extension_list()
+    
+    if self.__base_name in LanguageUsedInAtcoder.extension_list:
+      return LanguageUsedInAtcoder.extension_list[self.__base_name]
+    return None
+
+  def __load_extension_list(self):
+    with open(Path(__file__).parent / 'extension_list.yaml') as f:
+      LanguageUsedInAtcoder.extension_list = yaml.safe_load(f)
+    # pprint.pprint(LanguageUsedInAtcoder.extension_list)
+    # exit()
 
   def __identify_base_name(self):
     if LanguageUsedInAtcoder.language_list is None:
@@ -157,10 +174,22 @@ class Main:
     aud = AtcoderUserData('tawainfer')
     submissions = aud.get_submissions()
 
-    ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
-    ar.add([submissions[0]])
-    ar.add([submissions[0]])
+    # ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
+    # ar.add([submissions[0]])
+    # ar.add([submissions[0]])
     # ar.add(submissions)
+    
+    ans = set()
+    for s in submissions:
+      l = list()
+      for k, v in s.get_language().__dict__.items():
+        l.append(v)
+      ans.add(tuple(l))
+
+    ans = list(ans)
+    ans.sort()
+    for s in ans:
+      print(s)
 
 if __name__ == '__main__':
   Main()
