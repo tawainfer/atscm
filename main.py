@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 import re
-import ast
 import git
 import yaml
 import shutil
@@ -11,44 +10,23 @@ import time
 import pprint
 
 class LanguageUsedInAtcoder:
-  language_list = None
-  extension_list = None
+  language_to_extension = None
 
   def __init__(self, language):
     self.__full_name = language
     self.__display_name = re.sub(r'\([^()]*\)', '', self.__full_name).strip()
     self.__version = re.findall(r'\([^()]*\)', self.__full_name)[0].strip('(').strip(')')
-    self.__base_name = self.__identify_base_name()
+    self.__name = self.__display_name.split()[0]
     self.__extension = self.__identify_extension()
 
   def __identify_extension(self):
-    if LanguageUsedInAtcoder.extension_list is None:
-      self.__load_extension_list()
-    
-    if self.__base_name in LanguageUsedInAtcoder.extension_list:
-      return LanguageUsedInAtcoder.extension_list[self.__base_name]
+    if LanguageUsedInAtcoder.language_to_extension is None:
+      with open(Path(__file__).parent / 'language_to_extension.yaml') as f:
+        LanguageUsedInAtcoder.language_to_extension = yaml.safe_load(f)
+
+    if self.__name in LanguageUsedInAtcoder.language_to_extension:
+      return LanguageUsedInAtcoder.language_to_extension[self.__name]
     return None
-
-  def __load_extension_list(self):
-    with open(Path(__file__).parent / 'extension_list.yaml') as f:
-      LanguageUsedInAtcoder.extension_list = yaml.safe_load(f)
-    # pprint.pprint(LanguageUsedInAtcoder.extension_list)
-    # exit()
-
-  def __identify_base_name(self):
-    if LanguageUsedInAtcoder.language_list is None:
-      self.__fetch()
-
-    words = self.__full_name.split()
-    for l in LanguageUsedInAtcoder.language_list:
-      for w in words:
-        if l == w:
-          return l
-    return None
-
-  def __fetch(self):
-    time.sleep(1)
-    LanguageUsedInAtcoder.language_list = ast.literal_eval(requests.get(f'https://kenkoooo.com/atcoder/atcoder-api/v3/language_list').text)
 
 class Submission:
   def __init__(self, contest_id, epoch_second, execution_time, id, language, length, point, problem_id, result, user_id):
