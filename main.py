@@ -16,13 +16,13 @@ class LanguageUsedInAtcoder:
     self.__full_name = language
     self.__display_name = re.sub(r'\([^()]*\)', '', self.__full_name).strip()
     self.__version = re.findall(r'\([^()]*\)', self.__full_name)[0].strip('(').strip(')')
-    self.__base_name = self.__identify_base_name(self.__full_name)
+    self.__base_name = self.__identify_base_name()
 
-  def __identify_base_name(self, name):
+  def __identify_base_name(self):
     if LanguageUsedInAtcoder.language_list is None:
       self.__fetch()
 
-    words = name.split()
+    words = self.__full_name.split()
     for l in LanguageUsedInAtcoder.language_list:
       for w in words:
         if l == w:
