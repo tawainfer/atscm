@@ -2,11 +2,36 @@ import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 import re
+import ast
 import git
 import yaml
 import shutil
 import tempfile
 import time
+
+class LanguageUsedInAtcoder:
+  language_list = None
+
+  def __init__(self, language):
+    self.__full_name = language
+    self.__display_name = re.sub(r'\([^()]*\)', '', self.__full_name).strip()
+    self.__version = re.findall(r'\([^()]*\)', self.__full_name)[0].strip('(').strip(')')
+    self.__base_name = self.__identify_base_name(self.__full_name)
+
+  def __identify_base_name(self, name):
+    if LanguageUsedInAtcoder.language_list is None:
+      self.__fetch()
+
+    words = name.split()
+    for l in LanguageUsedInAtcoder.language_list:
+      for w in words:
+        if l == w:
+          return l
+    return None
+
+  def __fetch(self):
+    time.sleep(1)
+    LanguageUsedInAtcoder.language_list = ast.literal_eval(requests.get(f'https://kenkoooo.com/atcoder/atcoder-api/v3/language_list').text)
 
 class Submission:
   def __init__(self, contest_id, epoch_second, execution_time, id, language, length, point, problem_id, result, user_id):
@@ -14,7 +39,7 @@ class Submission:
     self.__epoch_second = epoch_second
     self.__execution_time = execution_time
     self.__id = id
-    self.__language = re.sub(r'\([^()]*\)', '', language).strip()
+    self.__language = LanguageUsedInAtcoder(language)
     self.__length = length
     self.__point = point
     self.__problem_id = problem_id
