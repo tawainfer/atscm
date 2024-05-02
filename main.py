@@ -17,18 +17,13 @@ class LanguageUsedInAtcoder:
     self.__display_name = re.sub(r'\([^()]*\)', '', self.__full_name).strip()
     self.__version = re.findall(r'\([^()]*\)', self.__full_name)[0].strip('(').strip(')')
     self.__name = self.__display_name.split()[0]
-    self.__extension = self.__identify_extension()
 
-  def __identify_extension(self):
-    if LanguageUsedInAtcoder.language_to_extension is None:
-      with open(Path(__file__).parent / 'language_to_extension.yaml') as f:
-        LanguageUsedInAtcoder.language_to_extension = yaml.safe_load(f)
-
-    if self.__name in LanguageUsedInAtcoder.language_to_extension:
-      return LanguageUsedInAtcoder.language_to_extension[self.__name]
-    return None
+  def get_name(self):
+    return self.__name
 
 class Submission:
+  language_to_extension = None
+
   def __init__(self, contest_id, epoch_second, execution_time, id, language, length, point, problem_id, result, user_id):
     self.__contest_id = contest_id
     self.__epoch_second = epoch_second
@@ -41,7 +36,7 @@ class Submission:
     self.__result = result
     self.__user_id = user_id
 
-    self.__extension = 'cpp'
+    self.__extension = self.__identify_extension()
     self.__category_id = 'other'
     self.__url = f'https://atcoder.jp/contests/{self.__contest_id}/submissions/{self.__id}'
     self.__code = None
@@ -71,6 +66,15 @@ class Submission:
     if self.__code is None:
       self.__scripe()
     return self.__code
+
+  def __identify_extension(self):
+    if Submission.language_to_extension is None:
+      with open(Path(__file__).parent / 'language_to_extension.yaml') as f:
+        Submission.language_to_extension = yaml.safe_load(f)
+
+    if self.__language.get_name() in Submission.language_to_extension:
+      return Submission.language_to_extension[self.__language.get_name()]
+    return None
 
   def __scripe(self):
     time.sleep(1)
@@ -159,15 +163,11 @@ class Main:
     
     ans = set()
     for s in submissions:
-      l = list()
-      for k, v in s.get_language().__dict__.items():
-        l.append(v)
-      ans.add(tuple(l))
+      ans.add((s.get_language().get_name(), s.get_extension()))
 
     ans = list(ans)
-    ans.sort()
     for s in ans:
-      print(s)
+      pprint.pprint(s)
 
 if __name__ == '__main__':
   Main()
