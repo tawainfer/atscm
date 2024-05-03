@@ -7,7 +7,6 @@ import yaml
 import shutil
 import tempfile
 import time
-import pprint
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -119,8 +118,8 @@ class AtcoderRepo:
     self.__repo = self.__clone()
     self.__setup()
 
-  # def __del__(self):
-  #   shutil.rmtree(self.__path)
+  def __del__(self):
+    shutil.rmtree(self.__path)
 
   def get_path(self):
     return self.__path
@@ -173,7 +172,7 @@ class AtcoderRepo:
 class Main:
   def __init__(self):
     aud = AtcoderUserData('tawainfer')
-    submissions = [s for s in aud.get_submissions() if s.get_result() == 'AC'][:10]
+    submissions = [s for s in aud.get_submissions() if s.get_result() == 'AC']
     ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
     ar.add(submissions)
     ar.update()
