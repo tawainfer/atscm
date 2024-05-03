@@ -8,6 +8,8 @@ import shutil
 import tempfile
 import time
 import pprint
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class LanguageUsedInAtcoder:
   language_to_extension = None
@@ -55,6 +57,9 @@ class Submission:
 
   def get_problem_id(self):
     return self.__problem_id
+  
+  def get_result(self):
+    return self.__result
   
   def get_extension(self):
     return self.__extension
@@ -135,12 +140,26 @@ class AtcoderRepo:
 
       if s.get_extension() not in index or s.get_id() > index[s.get_extension()]:
         index[s.get_extension()] = s.get_id()
-        source_path = problem_path / f'main.{s.get_extension()}'
+        source_path = problem_path / f'{s.get_problem_id()}.{s.get_extension()}'
         with open(source_path, 'w') as f:
           f.write(s.get_code())
 
         with open(index_path, 'w') as f:
           yaml.dump(index, f)
+
+  def update(self):
+    self.__repo.git.add(self.__path)
+    if len(self.__repo.index.diff("HEAD")) == 0:
+      print('Already up to date.')
+      return
+    self.__commit()
+    self.__push()
+
+  def __commit(self):
+    self.__repo.git.commit('-m', f'update: {datetime.now(ZoneInfo("Asia/Tokyo")).strftime('%Y-%m-%d %H:%M:%S %z')}')
+
+  def __push(self):
+    self.__repo.remote().push()
 
   def __clone(self):
     git.Repo.clone_from(self.__clone_url, self.__path)
@@ -154,20 +173,10 @@ class AtcoderRepo:
 class Main:
   def __init__(self):
     aud = AtcoderUserData('tawainfer')
-    submissions = aud.get_submissions()
-
-    # ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
-    # ar.add([submissions[0]])
-    # ar.add([submissions[0]])
-    # ar.add(submissions)
-    
-    ans = set()
-    for s in submissions:
-      ans.add((s.get_language().get_name(), s.get_extension()))
-
-    ans = list(ans)
-    for s in ans:
-      pprint.pprint(s)
+    submissions = [s for s in aud.get_submissions() if s.get_result() == 'AC'][:10]
+    ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
+    ar.add(submissions)
+    ar.update()
 
 if __name__ == '__main__':
   Main()
