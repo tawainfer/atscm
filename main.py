@@ -9,6 +9,36 @@ import tempfile
 import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from requests.adapters import HTTPAdapter
+
+class RequestSession():
+  __instance = None
+  __session = None
+
+  def __new__(cls):
+    if not cls.__instance:
+      cls.__instance = super(RequestSession, cls).__new__(cls)
+      cls.__session = cls.create_session()
+    return cls.__instance
+
+  @classmethod
+  def create_session(cls):
+    session = requests.Session()
+    session.mount('https://', HTTPAdapter())
+    return session
+
+  @classmethod
+  def get(cls, url, retry = 0, timeout_sec = 3):
+    time.sleep(1)
+    try:
+      res = cls.__session.get(url, timeout = timeout_sec)
+      res.raise_for_status()
+      return res
+    except requests.exceptions.RequestException as e:
+      if retry >= 1:
+        return cls.get(url, retry - 1, timeout_sec * 1.5)
+
+    return None
 
 class LanguageUsedInAtcoder:
   language_to_extension = None
@@ -82,7 +112,7 @@ class Submission:
 
   def __scripe(self):
     time.sleep(1)
-    data = requests.get(self.__url)
+    data = RequestSession().get(self.__url, 3)
     html = BeautifulSoup(data.text, 'html.parser')
     element = html.select_one('#submission-code')
     lines = element.text.replace('\r\n', '\n').split('\n')
@@ -99,7 +129,7 @@ class AtcoderUserData:
 
   def __fetch_submissions(self, second):
     time.sleep(1)
-    data = requests.get(f'https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user={self.__user}&from_second={second}').json()
+    data = RequestSession().get(f'https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user={self.__user}&from_second={second}', 3).json()
 
     if len(data) == 0:
       return
