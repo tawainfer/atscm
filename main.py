@@ -156,6 +156,9 @@ class AtcoderRepo:
 
   def add(self, submissions):
     for s in submissions:
+      if s.get_result() != 'AC':
+        continue
+
       problem_path = self.__path / Path(s.get_category_id()) \
         / Path(s.get_contest_id()) / Path(s.get_problem_id())
       if not problem_path.is_dir():
@@ -202,9 +205,8 @@ class AtcoderRepo:
 class Main:
   def __init__(self):
     aud = AtcoderUserData('tawainfer')
-    submissions = [s for s in aud.get_submissions() if s.get_result() == 'AC']
     ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
-    ar.add(submissions)
+    ar.add(aud.get_submissions())
     ar.update()
 
 if __name__ == '__main__':
