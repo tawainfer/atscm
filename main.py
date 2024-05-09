@@ -204,8 +204,12 @@ class AtcoderRepo:
 
 class Main:
   def __init__(self):
-    aud = AtcoderUserData('tawainfer')
-    ar = AtcoderRepo('git@github.com:tawainfer/test-repo-for-atcoder-scm.git')
+    user_config = dict()
+    with open(Path(__file__).parent / 'user_config.yaml') as f:
+      user_config = yaml.safe_load(f)
+
+    aud = AtcoderUserData(user_config['atcoder_username'])
+    ar = AtcoderRepo(user_config['clone_url'])
     ar.add(aud.get_submissions())
     ar.update()
 
