@@ -3,10 +3,10 @@ from pathlib import Path
 
 import yaml
 
-from .request_session import *
+from .request import *
 from .submission import *
 
-class AtcoderUserData:
+class UserData:
   def __init__(self, user):
     self.__user = user
     self.__submissions = list()
@@ -17,7 +17,7 @@ class AtcoderUserData:
 
   def __fetch_submissions(self, second):
     time.sleep(1)
-    data = RequestSession().get(f'https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user={self.__user}&from_second={second}', 3).json()
+    data = Request().get(f'https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user={self.__user}&from_second={second}', 3).json()
 
     if len(data) == 0:
       return

@@ -2,13 +2,13 @@ import time
 
 import requests
 
-class RequestSession:
+class Request:
   __instance = None
   __session = None
 
   def __new__(cls):
     if not cls.__instance:
-      cls.__instance = super(RequestSession, cls).__new__(cls)
+      cls.__instance = super(Request, cls).__new__(cls)
       cls.__session = cls.create_session()
     return cls.__instance
 

@@ -2,8 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from atscm import AtcoderUserData
-from atscm import AtcoderRepo
+import atscm
 
 class Main:
   def __init__(self):
@@ -11,9 +10,9 @@ class Main:
     with open(Path(__file__).parent / 'user_config.yaml') as f:
       user_config = yaml.safe_load(f)
 
-    aud = AtcoderUserData(user_config['atcoder_username'])
-    ar = AtcoderRepo(user_config['clone_url'])
-    ar.add(aud.get_submissions())
+    aud = atscm.UserData(user_config['atcoder_username'])
+    ar = atscm.Repo(user_config['clone_url'])
+    ar.add(aud.get_submissions()[:20])
     ar.update()
 
 if __name__ == '__main__':

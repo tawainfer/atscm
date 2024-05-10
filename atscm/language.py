@@ -1,6 +1,6 @@
 import re
 
-class LanguageUsedInAtcoder:
+class Language:
   def __init__(self, language):
     self.__full_name = language
     self.__display_name = re.sub(r'\([^()]*\)', '', self.__full_name).strip()

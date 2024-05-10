@@ -4,8 +4,8 @@ from pathlib import Path
 import yaml
 from bs4 import BeautifulSoup
 
-from .language_used_in_atcoder import *
-from .request_session import *
+from .language import *
+from .request import *
 
 class Submission:
   language_to_extension = None
@@ -15,7 +15,7 @@ class Submission:
     self.__epoch_second = epoch_second
     self.__execution_time = execution_time
     self.__id = id
-    self.__language = LanguageUsedInAtcoder(language)
+    self.__language = Language(language)
     self.__length = length
     self.__point = point
     self.__problem_id = problem_id
@@ -58,7 +58,7 @@ class Submission:
 
   def __identify_extension(self):
     if Submission.language_to_extension is None:
-      with open(Path(__file__).parent / 'language_to_extension.yaml') as f:
+      with open(Path(__file__).parent / 'extension.yaml') as f:
         Submission.language_to_extension = yaml.safe_load(f)
 
     if self.__language.get_name() in Submission.language_to_extension:
@@ -67,7 +67,7 @@ class Submission:
 
   def __scripe(self):
     time.sleep(1)
-    data = RequestSession().get(self.__url, 3)
+    data = Request().get(self.__url, 3)
     html = BeautifulSoup(data.text, 'html.parser')
     element = html.select_one('#submission-code')
     lines = element.text.replace('\r\n', '\n').split('\n')

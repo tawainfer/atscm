@@ -7,10 +7,10 @@ from zoneinfo import ZoneInfo
 import git
 import yaml
 
-from .request_session import *
+from .request import *
 from .submission import *
 
-class AtcoderRepo:
+class Repo:
   def __init__(self, clone_url):
     self.__clone_url = clone_url
     self.__path = Path(tempfile.mkdtemp())
