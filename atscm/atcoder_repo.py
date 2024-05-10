@@ -5,8 +5,8 @@ import git
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from pathlib import Path
-from request_session import RequestSession
-from submission import Submission
+from .request_session import *
+from .submission import *
 
 class AtcoderRepo:
   def __init__(self, clone_url):

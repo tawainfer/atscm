@@ -30,3 +30,6 @@ class RequestSession:
         return cls.get(url, retry - 1, timeout_sec * 1.5)
 
     return None
+
+if __name__ == '__main__':
+  pass

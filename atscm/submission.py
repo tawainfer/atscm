@@ -3,8 +3,8 @@ from pathlib import Path
 import re
 import time
 import yaml
-from request_session import RequestSession
-from language_used_in_atcoder import LanguageUsedInAtcoder
+from .language_used_in_atcoder import *
+from .request_session import *
 
 class Submission:
   language_to_extension = None

@@ -1,8 +1,8 @@
 import time
 import yaml
 from pathlib import Path
-from request_session import RequestSession
-from submission import Submission
+from .request_session import *
+from .submission import *
 
 class AtcoderUserData:
   def __init__(self, user):
