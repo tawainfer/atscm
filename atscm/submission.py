@@ -1,8 +1,9 @@
-from bs4 import BeautifulSoup
-from pathlib import Path
-import re
 import time
+from pathlib import Path
+
 import yaml
+from bs4 import BeautifulSoup
+
 from .language_used_in_atcoder import *
 from .request_session import *
 

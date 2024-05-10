@@ -1,6 +1,8 @@
 import time
-import yaml
 from pathlib import Path
+
+import yaml
+
 from .request_session import *
 from .submission import *
 

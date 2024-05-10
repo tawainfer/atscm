@@ -1,6 +1,6 @@
-import requests
-from requests.adapters import HTTPAdapter
 import time
+
+import requests
 
 class RequestSession:
   __instance = None
@@ -15,7 +15,7 @@ class RequestSession:
   @classmethod
   def create_session(cls):
     session = requests.Session()
-    session.mount('https://', HTTPAdapter())
+    session.mount('https://', requests.adapters.HTTPAdapter())
     return session
 
   @classmethod
