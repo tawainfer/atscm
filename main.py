@@ -12,7 +12,7 @@ class Main:
 
     aud = atscm.UserData(user_config['atcoder_username'])
     ar = atscm.Repo(user_config['clone_url'])
-    ar.add(aud.get_submissions()[:20])
+    ar.add(aud.get_submissions())
     ar.update()
 
 if __name__ == '__main__':
