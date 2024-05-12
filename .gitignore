@@ -1,1 +1,9 @@
-/tmp
+*.pyc
+__pycache__/
+
+venv/
+.venv/
+
+poetry.lock
+
+/user_config.yaml
