@@ -6,4 +6,4 @@ venv/
 
 poetry.lock
 
-/user_config.toml
+/config.toml
