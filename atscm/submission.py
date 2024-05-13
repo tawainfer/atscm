@@ -23,7 +23,6 @@ class Submission:
     self.__user_id = user_id
 
     self.__extension = self.__identify_extension()
-    self.__category_id = 'other'
     self.__url = f'https://atcoder.jp/contests/{self.__contest_id}/submissions/{self.__id}'
     self.__code = None
 
@@ -32,9 +31,6 @@ class Submission:
 
   def get_language(self):
     return self.__language
-
-  def get_category_id(self):
-    return self.__category_id
 
   def get_contest_id(self):
     return self.__contest_id
