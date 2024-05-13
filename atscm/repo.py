@@ -11,8 +11,9 @@ from .request import *
 from .submission import *
 
 class Repo:
-  def __init__(self, clone_url):
+  def __init__(self, clone_url, classification):
     self.__clone_url = clone_url
+    self.__classification = classification
     self.__path = Path(tempfile.mkdtemp())
     self.__repo = self.__clone()
     self.__setup()
@@ -28,23 +29,27 @@ class Repo:
       if s.get_result() != 'AC':
         continue
 
-      problem_path = self.__path / Path(s.get_category_id()) \
-        / Path(s.get_contest_id()) / Path(s.get_problem_id())
-      if not problem_path.is_dir():
-        problem_path.mkdir(parents=True)
+      for name in self.__classification:
+        if not any(re.search(keyword, s.get_problem_id()) for keyword in self.__classification[name]):
+          continue
 
-      index_path = problem_path / 'index.yaml'
-      index = dict()
-      if index_path.is_file():
-        with open(index_path, 'r') as f:
-          index = yaml.safe_load(f)
+        problem_path = self.__path / name / s.get_contest_id() / s.get_problem_id()
+        if not problem_path.is_dir():
+          problem_path.mkdir(parents = True)
 
-      if s.get_extension() not in index or s.get_id() > index[s.get_extension()]:
+        index_path = problem_path / 'index.yaml'
+        index = dict()
+        if index_path.is_file():
+          with open(index_path, 'r') as f:
+            index = yaml.safe_load(f)
+
+        if s.get_extension() in index and s.get_id() <= index[s.get_extension()]:
+          continue
+
         index[s.get_extension()] = s.get_id()
         source_path = problem_path / f'{s.get_problem_id()}.{s.get_extension()}'
         with open(source_path, 'w') as f:
           f.write(s.get_code())
-
         with open(index_path, 'w') as f:
           yaml.dump(index, f)
 

@@ -1,3 +1,4 @@
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -6,12 +7,12 @@ import atscm
 
 class Main:
   def __init__(self):
-    user_config = dict()
-    with open(Path(__file__).parent / 'user_config.yaml') as f:
-      user_config = yaml.safe_load(f)
+    config = dict()
+    with open(Path(__file__).parent / 'config.toml', 'rb') as f:
+      config = tomllib.load(f)
 
-    aud = atscm.UserData(user_config['atcoder_username'])
-    ar = atscm.Repo(user_config['clone_url'])
+    aud = atscm.UserData(config['atcoder_username'])
+    ar = atscm.Repo(config['clone_url'], config['classification'])
     ar.add(aud.get_submissions())
     ar.update()
 
