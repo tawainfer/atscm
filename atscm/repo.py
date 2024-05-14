@@ -26,7 +26,7 @@ class Repo:
 
   def add(self, submissions):
     for s in submissions:
-      if s.get_result() != 'AC':
+      if (s.get_result() != 'AC') or (s.get_extension() is None):
         continue
 
       for name in self.__classification:
