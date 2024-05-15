@@ -1,8 +1,6 @@
 import tomllib
 from pathlib import Path
 
-import yaml
-
 import atscm
 
 class Main:

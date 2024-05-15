@@ -75,3 +75,28 @@ class Repo:
     if 'main' not in self.__repo.branches:
       raise Exception("mainブランチをリモートリポジトリに作成してください。")
     self.__repo.git.checkout('main')
+
+    with tempfile.TemporaryDirectory() as t:
+      tmp_dir = Path(t)
+      found_classifications = set()
+
+      for index_path in self.__path.glob('**/index.yaml'):
+        classification_id = index_path.parents[2].name
+        contest_id = index_path.parents[1].name
+        problem_id = index_path.parents[0].name
+        found_classifications.add(classification_id)
+
+        before = self.__path / classification_id / contest_id / problem_id
+        after = tmp_dir / contest_id / problem_id
+        if not after.exists():
+          shutil.copytree(before, after)
+
+      for name in found_classifications:
+        shutil.rmtree(self.__path / name)
+
+      for contest_dir in tmp_dir.glob('*'):
+        for problem_dir in contest_dir.glob('*'):
+          for name in self.__classification:
+            if any(re.search(keyword, problem_dir.name) for keyword in self.__classification[name]):
+              after = self.__path / name / contest_dir.name / problem_dir.name
+              shutil.copytree(problem_dir, after, dirs_exist_ok = True)
