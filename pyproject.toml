@@ -1,10 +1,10 @@
 [project]
 name = "atscm"
-version = "0.2.1"
+version = "0.2.2"
 
 [tool.poetry]
 name = "atscm"
-version = "0.2.1"
+version = "0.2.2"
 description = "AtCoderに提出した最新のACコードをリモートリポジトリにプッシュして管理します。"
 authors = ["tawainfer <tawainfer@gmail.com>"]
 readme = "README.md"
